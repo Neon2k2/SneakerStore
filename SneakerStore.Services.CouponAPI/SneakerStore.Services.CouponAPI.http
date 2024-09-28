@@ -1,0 +1,6 @@
+@SneakerStore.Services.CouponAPI_HostAddress = http://localhost:5177
+
+GET {{SneakerStore.Services.CouponAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
