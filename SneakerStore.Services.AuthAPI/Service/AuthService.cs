@@ -38,7 +38,6 @@ namespace SneakerStore.Services.AuthAPI.Service
 
             return false;
         }
-
         public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto)
         {
             var user = _db.ApplicationUsers.FirstOrDefault(u => u.UserName.ToLower() == loginRequestDto.Username.ToLower());
@@ -47,16 +46,14 @@ namespace SneakerStore.Services.AuthAPI.Service
 
             if (user == null || isValid == false)
             {
-                return new LoginResponseDto()
-                {
-                    User = null,
-                    Token = ""
-                };
+                return new LoginResponseDto() { User = null, Token = "" };
             }
 
-            var token = _jwtTokenGenerator.GenerateToken(user);
+            //if user was found , Generate JWT Token
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
-             UserDto userDto = new()
+            UserDto userDTO = new()
             {
                 Email = user.Email,
                 Id = user.Id,
@@ -66,12 +63,11 @@ namespace SneakerStore.Services.AuthAPI.Service
 
             LoginResponseDto loginResponseDto = new LoginResponseDto()
             {
-                User = userDto,
-                Token = ""
+                User = userDTO,
+                Token = token
             };
 
             return loginResponseDto;
-
         }
 
 

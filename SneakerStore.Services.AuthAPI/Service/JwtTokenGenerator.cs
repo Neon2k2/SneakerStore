@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using SneakerStore.Services.AuthAPI.Models;
 using SneakerStore.Services.AuthAPI.Service.IService;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -15,7 +16,7 @@ namespace SneakerStore.Services.AuthAPI.Service
         public JwtTokenGenerator(IOptions<JwtOptions> jwtoptions) {
             _jwtoptions = jwtoptions.Value;
         }
-        public string GenerateToken(ApplicationUser applicationUser)
+        public string GenerateToken(ApplicationUser applicationUser, IEnumerable<string> roles)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -24,8 +25,10 @@ namespace SneakerStore.Services.AuthAPI.Service
             {
                 new Claim(JwtRegisteredClaimNames.Email, applicationUser.Email),
                 new Claim(JwtRegisteredClaimNames.Sub, applicationUser.Id),
-                new Claim(JwtRegisteredClaimNames.Email, applicationUser.UserName),
+                new Claim(JwtRegisteredClaimNames.Name, applicationUser.UserName),
             };
+
+            claimList.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

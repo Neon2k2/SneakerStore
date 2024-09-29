@@ -1,39 +1,79 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SneakerStore.Web.Models;
-using SneakerStore.Web.Service;
+using SneakerStore.Web.Service.IService;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Mango.Web.Controllers
 {
     public class CouponController : Controller
     {
         private readonly ICouponService _couponService;
-        public CouponController(ICouponService couponService)
+        private readonly ITokenProvider _tokenProvider;
+
+        public CouponController(ICouponService couponService, ITokenProvider tokenProvider)
         {
             _couponService = couponService;
+            _tokenProvider = tokenProvider;
         }
 
 
-        public async Task<IActionResult> CouponIndex()
-        {
-            List<CouponDto>? list = new();
+		//public async Task<IActionResult> CouponIndex()
+		//{
+		//    List<CouponDto>? list = new();
 
-            ResponseDto? response = await _couponService.GetAllCouponsAsync();
+		//    ResponseDto? response = await _couponService.GetAllCouponsAsync();
 
-            if (response != null && response.IsSuccess)
-            {
-                list = JsonConvert.DeserializeObject<List<CouponDto>>(Convert.ToString(response.Result));
-            }
-            else
-            {
-                TempData["error"] = response?.Message;
-            }
+		//    if (response != null && response.IsSuccess)
+		//    {
+		//        list = JsonConvert.DeserializeObject<List<CouponDto>>(Convert.ToString(response.Result));
+		//    }
+		//    else
+		//    {
+		//        TempData["error"] = response?.Message;
+		//    }
 
-            return View(list);
-        }
+		//    return View(list);
+		//}
+		public async Task<IActionResult> CouponIndex()
+		{
+			// List to hold the coupons
+			List<CouponDto>? list = new();
 
-        public async Task<IActionResult> CouponCreate()
+			// Get the coupons
+			ResponseDto? response = await _couponService.GetAllCouponsAsync();
+
+			if (response != null && response.IsSuccess)
+			{
+				list = JsonConvert.DeserializeObject<List<CouponDto>>(Convert.ToString(response.Result));
+			}
+			else
+			{
+				TempData["error"] = response?.Message;
+			}
+
+            // Read the token from the cookie
+            var token = _tokenProvider.GetToken();
+
+            if (!string.IsNullOrEmpty(token))
+			{
+				var handler = new JwtSecurityTokenHandler();
+				var jwt = handler.ReadJwtToken(token);
+
+				// Extract the role
+                var roleClaim = jwt.Claims.FirstOrDefault(u => u.Type == "role")?.Value;
+
+                // Pass the role to the view
+                ViewBag.UserRole = roleClaim;
+			}
+
+			// Pass the list of coupons to the view
+			return View(list);
+		}
+
+		public async Task<IActionResult> CouponCreate()
         {
             return View();
         }

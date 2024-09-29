@@ -1,4 +1,5 @@
 ﻿using SneakerStore.Web.Models;
+using SneakerStore.Web.Service.IService;
 using SneakerStore.Web.Utility;
 
 namespace SneakerStore.Web.Service
@@ -30,7 +31,7 @@ namespace SneakerStore.Web.Service
                 ApiType = SD.ApiType.POST,
                 Data = loginRequestDto,
                 Url = SD.AuthAPIBase + "/api/auth/login"
-            });
+            }, withBearer: false);
         }
 
         public async Task<ResponseDto?> RegisterAsync(RegisterationRequestDto registerationRequestDto)
@@ -40,7 +41,7 @@ namespace SneakerStore.Web.Service
                 ApiType = SD.ApiType.POST,
                 Data = registerationRequestDto,
                 Url = SD.AuthAPIBase + "/api/auth/register"
-            });
+            }, withBearer: false);
         }
     }
 }

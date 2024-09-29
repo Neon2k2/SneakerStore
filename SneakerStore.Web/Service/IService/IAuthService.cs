@@ -1,6 +1,6 @@
 ﻿using SneakerStore.Web.Models;
 
-namespace SneakerStore.Web.Service
+namespace SneakerStore.Web.Service.IService
 {
     public interface IAuthService
     {

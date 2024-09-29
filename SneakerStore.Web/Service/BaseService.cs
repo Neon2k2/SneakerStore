@@ -3,19 +3,22 @@ using System.Text;
 using Newtonsoft.Json;
 using static SneakerStore.Web.Utility.SD;
 using System.Net;
+using SneakerStore.Web.Service.IService;
 
 namespace SneakerStore.Web.Service
 {
     public class BaseService : IBaseService
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ITokenProvider _tokenProvider;
 
-        public BaseService(IHttpClientFactory httpClientFactory)
+        public BaseService(IHttpClientFactory httpClientFactory, ITokenProvider tokenProvider)
         {
             _httpClientFactory = httpClientFactory;
+            _tokenProvider = tokenProvider;
         }
 
-        public async Task<ResponseDto?> SendAsync(RequestDto requestdto)
+        public async Task<ResponseDto?> SendAsync(RequestDto requestdto, bool withBearer = true)
         {
             HttpClient client = _httpClientFactory.CreateClient("SneakerAPI");
 
@@ -24,7 +27,13 @@ namespace SneakerStore.Web.Service
             HttpRequestMessage message = new();
             message.Headers.Add("Accept", "application/json");
             //token
-            Console.WriteLine(requestdto.Url);
+
+            if (withBearer)
+            {
+                var token = _tokenProvider.GetToken();
+                message.Headers.Add("Authorization", $"Bearer {token}");
+            }
+
             message.RequestUri = new Uri(requestdto.Url);
             if (requestdto != null && requestdto.Data != null)
             {
@@ -51,7 +60,6 @@ namespace SneakerStore.Web.Service
                     message.Method = HttpMethod.Get;
                     break;
             }
-            Console.WriteLine(message);
             apiResponse = await client.SendAsync(message);
 
             try
