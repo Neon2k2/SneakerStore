@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SneakerStore.Web", "Sneaker
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SneakerStore.Services.AuthAPI", "SneakerStore.Services.AuthAPI\SneakerStore.Services.AuthAPI.csproj", "{3CC8673C-04DE-455B-BBDB-DA999A3E1342}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SneakerStore.Services.ProductApi", "SneakerStore.Services.ProductApi\SneakerStore.Services.ProductApi.csproj", "{2E13F276-946A-44AB-96CB-9E6034717F9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{3CC8673C-04DE-455B-BBDB-DA999A3E1342}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CC8673C-04DE-455B-BBDB-DA999A3E1342}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CC8673C-04DE-455B-BBDB-DA999A3E1342}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E13F276-946A-44AB-96CB-9E6034717F9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E13F276-946A-44AB-96CB-9E6034717F9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E13F276-946A-44AB-96CB-9E6034717F9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E13F276-946A-44AB-96CB-9E6034717F9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,6 +49,7 @@ Global
 		{33591A69-9468-4FF8-8C1C-E259E6B95BC3} = {131B3802-FA42-4472-99F5-BEDD63CFF464}
 		{6211C190-028F-4C96-BBFD-5E592EC09E03} = {9BBF48E2-4266-4647-BC99-61F31A0D8986}
 		{3CC8673C-04DE-455B-BBDB-DA999A3E1342} = {131B3802-FA42-4472-99F5-BEDD63CFF464}
+		{2E13F276-946A-44AB-96CB-9E6034717F9F} = {131B3802-FA42-4472-99F5-BEDD63CFF464}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {053DFE92-B82D-4C97-8925-E8157921B400}

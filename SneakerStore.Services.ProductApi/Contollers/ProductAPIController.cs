@@ -1,38 +1,38 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SneakerStore.Services.CouponAPI.Data;
-using SneakerStore.Services.CouponAPI.Models;
-using SneakerStore.Services.CouponAPI.Models.Dto;
+using SneakerStore.Services.ProductApi.Model.Dto;
+using SneakerStore.Services.ProductApi.Models;
+using SneakerStore.Services.ProductApi.Models.Dto;
 
-namespace SneakerStore.Services.CouponAPI.Controllers
+namespace SneakerStore.Services.ProductApi.Contollers
 {
-    [Route("api/coupon")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class CouponAPIController : ControllerBase
+    public class ProductAPIController : ControllerBase
     {
-        private readonly AppDbContext _db;
         private readonly IMapper _mapper;
+        private readonly AppDbContext _db;
         private readonly ResponseDto _response;
 
-        public CouponAPIController(AppDbContext db, IMapper mapper)
+        public ProductAPIController(IMapper mapper, AppDbContext db)
         {
-            _db = db;
             _mapper = mapper;
+            _db = db;
             _response = new ResponseDto();
         }
 
         public IMapper Mapper { get; }
-          
+
         [HttpGet]
         public ResponseDto Get()
         {
             try
             {
-                IEnumerable<Coupon> objList = _db.Coupons.ToList();
-                _response.Result = _mapper.Map<IEnumerable<CouponDto>>(objList);
+                IEnumerable<Product> objList = _db.Products.ToList();
+                _response.Result = _mapper.Map<IEnumerable<ProductDto>>(objList);
             }
             catch (Exception ex)
             {
@@ -40,56 +40,39 @@ namespace SneakerStore.Services.CouponAPI.Controllers
                 _response.Message = ex.Message;
             }
             return _response;
-
         }
 
         [HttpGet]
         [Route("{id:int}")]
+
         public ResponseDto Get(int id)
         {
             try
             {
-               Coupon coupon = _db.Coupons.First(u=>u.CouponId == id);
-                _mapper.Map<CouponDto>(coupon);
-               _response.Result = coupon;
+                Product product = _db.Products.First(u => u.ProductId == id);
+                _response.Result = product;
             }
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
                 _response.Message = ex.Message;
             }
+
             return _response;
 
-        }
-
-        [HttpGet]
-        [Route("GetByCode/{code}")]
-        public ResponseDto GetByCode(string code)
-        {
-            try
-            {
-                Coupon coupon = _db.Coupons.First(u => u.CouponCode == code.ToLower());
-                _response.Result = _mapper.Map<CouponDto>(coupon);
-            }
-            catch (Exception ex)
-            {
-                _response.IsSuccess = false;
-                _response.Message = ex.Message;
-            }
-            return _response;
         }
 
         [HttpPost]
         [Authorize(Roles = "ADMIN")]
-        public ResponseDto Post([FromBody] CouponDto couponDto)
+        public ResponseDto Post([FromBody] ProductDto productDto)
         {
             try
             {
-                Coupon obj = _mapper.Map<Coupon>(couponDto);
-                _db.Coupons.Add(obj);
+                Product product = _mapper.Map<Product>(productDto);
+                _db.Products.Add(product);
                 _db.SaveChanges();
 
-                _response.Result = _mapper.Map<CouponDto>(obj);
+                _response.Result = _mapper.Map<ProductDto>(product);
             }
             catch (Exception ex)
             {
@@ -98,26 +81,29 @@ namespace SneakerStore.Services.CouponAPI.Controllers
             }
             return _response;
         }
+
 
         [HttpPut]
         [Authorize(Roles = "ADMIN")]
-        public ResponseDto Put([FromBody] CouponDto couponDto)
+        public ResponseDto Put([FromBody] ProductDto productDto)
         {
             try
             {
-                Coupon obj = _mapper.Map<Coupon>(couponDto);
-                _db.Coupons.Update(obj);
+                Product product = _mapper.Map<Product>(productDto);
+                _db.Products.Update(product);
                 _db.SaveChanges();
 
-                _response.Result = _mapper.Map<CouponDto>(obj);
+                _response.Result = _mapper.Map<ProductDto>(product);
             }
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
                 _response.Message = ex.Message;
             }
+
             return _response;
         }
+
 
         [HttpDelete]
         [Route("{id:int}")]
@@ -126,21 +112,22 @@ namespace SneakerStore.Services.CouponAPI.Controllers
         {
             try
             {
-                Coupon obj = _db.Coupons.First(u => u.CouponId == id);
-                _db.Coupons.Remove(obj);
+                Product product = _db.Products.First(u => u.ProductId == id);
+                _db.Products.Remove(product);
                 _db.SaveChanges();
 
-                _response.Result = _mapper.Map<CouponDto>(obj);
+                _response.Result = _mapper.Map<ProductDto>(product);
                 _response.IsSuccess = true;
-                _response.Message = $"Coupon code {obj.CouponCode} has been Deleted";
+                _response.Message = $"Coupon code {product.Name} has been Deleted";
             }
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
                 _response.Message = ex.Message;
             }
-            return _response;
-        }
 
+            return _response;
+
+        }
     }
 }
