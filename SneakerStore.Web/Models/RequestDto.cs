@@ -1,12 +1,11 @@
-﻿using static SneakerStore.Web.Utility.SD;
+﻿using SneakerStore.Web.Utility;
 
-namespace SneakerStore.Web.Models
+public class RequestDto
 {
-    public class RequestDto
-    {
-        public ApiType ApiType { get; set; }
-        public string Url { get; set; }
-        public object Data { get; set; }
-        public string AccessToken { get; set; }
-    }
+    public SD.ApiType ApiType { get; set; } = SD.ApiType.GET;
+    public string Url { get; set; }
+    public object Data { get; set; }
+    public string AccessToken { get; set; }
+
+    public SD.ContentType ContentType { get; set; } = SD.ContentType.Json;
 }

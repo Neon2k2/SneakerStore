@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SneakerStore.Services.ProductApi.Model.Dto
+namespace SneakerStore.Web.Models
 {
     public class ProductDto
     {
@@ -12,5 +12,8 @@ namespace SneakerStore.Services.ProductApi.Model.Dto
 		public string? ImageUrl { get; set; }
 		public string? ImageLocalPath { get; set; }
 		public IFormFile? Image { get; set; }
+
+		[Range(1, 100)]
+		public int Count { get; set; } = 1;
 	}
 }

@@ -15,7 +15,6 @@ namespace SneakerStore.Web.Service
 
         public async Task<ResponseDto?>CreateCouponsAsync(CouponDto couponDto)
         {
-            Console.WriteLine(couponDto);
             return await _baseService.SendAsync(new RequestDto()
             {
                 ApiType = Utility.SD.ApiType.POST,

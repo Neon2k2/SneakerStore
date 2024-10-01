@@ -8,9 +8,9 @@ using SneakerStore.Services.ProductApi.Models.Dto;
 
 namespace SneakerStore.Services.ProductApi.Contollers
 {
-    [Route("api/[controller]")]
+    [Route("api/product")]
     [ApiController]
-    [Authorize]
+
     public class ProductAPIController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -62,16 +62,65 @@ namespace SneakerStore.Services.ProductApi.Contollers
 
         }
 
-        [HttpPost]
-        [Authorize(Roles = "ADMIN")]
-        public ResponseDto Post([FromBody] ProductDto productDto)
+        [HttpGet]
+        [Route("GetByName/{name}")]
+        public ResponseDto Get(string name)
         {
             try
             {
-                Product product = _mapper.Map<Product>(productDto);
+                Product product = _db.Products.First(u => u.Name == name);
+                _response.Result = product;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.Message = ex.Message;
+            }
+
+            return _response;
+
+        }
+
+
+        [HttpPost]
+        [Authorize(Roles = "ADMIN")]
+        public ResponseDto Post(ProductDto ProductDto)
+        {
+            try
+            {
+                Product product = _mapper.Map<Product>(ProductDto);
                 _db.Products.Add(product);
                 _db.SaveChanges();
 
+                if (ProductDto.Image != null)
+                {
+
+                    string fileName = product.ProductId + Path.GetExtension(ProductDto.Image.FileName);
+                    string filePath = @"wwwroot\ProductImages\" + fileName;
+
+                    //I have added the if condition to remove the any image with same name if that exist in the folder by any change
+                    var directoryLocation = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+                    FileInfo file = new FileInfo(directoryLocation);
+                    if (file.Exists)
+                    {
+                        file.Delete();
+                    }
+
+                    var filePathDirectory = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+                    using (var fileStream = new FileStream(filePathDirectory, FileMode.Create))
+                    {
+                        ProductDto.Image.CopyTo(fileStream);
+                    }
+                    var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+                    product.ImageUrl = baseUrl + "/ProductImages/" + fileName;
+                    product.ImageLocalPath = filePath;
+                }
+                else
+                {
+                    product.ImageUrl = "https://placehold.co/600x400";
+                }
+                _db.Products.Update(product);
+                _db.SaveChanges();
                 _response.Result = _mapper.Map<ProductDto>(product);
             }
             catch (Exception ex)
@@ -85,11 +134,37 @@ namespace SneakerStore.Services.ProductApi.Contollers
 
         [HttpPut]
         [Authorize(Roles = "ADMIN")]
-        public ResponseDto Put([FromBody] ProductDto productDto)
+        public ResponseDto Put(ProductDto ProductDto)
         {
             try
             {
-                Product product = _mapper.Map<Product>(productDto);
+                Product product = _mapper.Map<Product>(ProductDto);
+
+                if (ProductDto.Image != null)
+                {
+                    if (!string.IsNullOrEmpty(product.ImageLocalPath))
+                    {
+                        var oldFilePathDirectory = Path.Combine(Directory.GetCurrentDirectory(), product.ImageLocalPath);
+                        FileInfo file = new FileInfo(oldFilePathDirectory);
+                        if (file.Exists)
+                        {
+                            file.Delete();
+                        }
+                    }
+
+                    string fileName = product.ProductId + Path.GetExtension(ProductDto.Image.FileName);
+                    string filePath = @"wwwroot\ProductImages\" + fileName;
+                    var filePathDirectory = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+                    using (var fileStream = new FileStream(filePathDirectory, FileMode.Create))
+                    {
+                        ProductDto.Image.CopyTo(fileStream);
+                    }
+                    var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+                    product.ImageUrl = baseUrl + "/ProductImages/" + fileName;
+                    product.ImageLocalPath = filePath;
+                }
+
+
                 _db.Products.Update(product);
                 _db.SaveChanges();
 
@@ -100,9 +175,9 @@ namespace SneakerStore.Services.ProductApi.Contollers
                 _response.IsSuccess = false;
                 _response.Message = ex.Message;
             }
-
             return _response;
         }
+
 
 
         [HttpDelete]
